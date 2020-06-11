@@ -1,23 +1,30 @@
+const express = require('express');
+const app = express();
+const Joi = require('@hapi/joi')
+Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
-const genres = require('./routes/genres');d
 const config = require('config');
 const morgan = require('morgan');
 const debug = require('debug')('startup');
-const express = require('express');
-const app = express();
+const genres = require('./routes/genres');
+const customers = require('./routes/customers');
+const movies = require('./routes/movies');
+const rentals = require('./routes/rentals');
 
-mongoose.set('useUnifiedTopology', true);
-mongoose.connect('mongodb://localhost/movie-rental',{ useNewUrlParser: true })
+if(!config.get('jwtPrivateKey')){
+    console.log('FATAL ERROR: jwtPrivateKey is not defined.');
+    process.exit(1);
+}
+
+mongoose.connect('mongodb://localhost/movie-rental',{ useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false})
     .then(()=> console.log('Connected to MongoDB....'))
     .catch(error => console.error('Connection Failed....'));
     
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
-app.use(express.static('public'));
 app.use('/api/genres',genres);
-
-console.log(`Application name: ${config.get('name')}`);
-console.log(`Mail Server: ${config.get('mail.host')}`);
+app.use('/api/customers',customers);
+app.use('/api/movies', movies);
+app.use('/api/rentals', rentals);
 
 if(app.get('env')==='development'){
     app.use(morgan('dev'));
