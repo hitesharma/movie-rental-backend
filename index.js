@@ -1,3 +1,4 @@
+require('express-async-errors');
 const express = require('express');
 const app = express();
 const Joi = require('@hapi/joi')
@@ -18,9 +19,13 @@ if(!config.get('jwtPrivateKey')){
     process.exit(1);
 }
 
-mongoose.connect('mongodb://localhost/movie-rental',{ useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false})
-    .then(()=> console.log('Connected to MongoDB....'))
-    .catch(error => console.error('Connection Failed....'));
+mongoose.connect('mongodb://localhost/movie-rental',{ 
+    useNewUrlParser: true, 
+    useUnifiedTopology: true, 
+    useCreateIndex: true, 
+    useFindAndModify: false})
+        .then(()=> console.log('Connected to MongoDB....'))
+        .catch(error => console.error('Connection Failed....'));
     
 app.use(express.json());
 app.use('/api/genres',genres);
@@ -37,7 +42,7 @@ if(app.get('env')==='development'){
 
 app.get('/', (req,res)=>{
     res.send('Root');
-})
+});
 
 const port = 8000 || process.env.PORT;
 app.listen(port),()=>console.log(`Listening to port ${port}`);
