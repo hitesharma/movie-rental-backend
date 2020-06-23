@@ -5,7 +5,6 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', async (req, res)=>{
-    throw new Error('could not load genres');
     let genres = await Genre.find().sort('name');
     res.send(genres);
 });
